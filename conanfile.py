@@ -1,48 +1,44 @@
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, AutoToolsBuildEnvironment, tools
 
 
 class LibgpiodConan(ConanFile):
     name = "libgpiod"
     version = "1.2"
-    license = "<Put the package license here>"
-    author = "<Put your name here> <And your email here>"
-    url = "<Package recipe repository url here, for issues about the package>"
-    description = "<Description of Libgpiod here>"
-    topics = ("<Put some tag here>", "<here>", "<and here>")
+    license = "LGPL-2.1-or-later"
+    author = "Michael Beach <michaelb@ieee.org>"
+    url = "https://github.com/mbeach/conan-libgpiod"
+    description = "Library for interacting with the linux GPIO character device"
+    topics = ("gpio")
+    exports_sources = "chip_iter.patch"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
-    generators = "cmake"
+    options = {"shared": [True, False], "fPIC": [True, False]}
+    default_options = {"shared": False, "fPIC": True}
 
     def source(self):
-        self.run("git clone https://github.com/memsharded/hello.git")
-        self.run("cd hello && git checkout static_shared")
-        # This small hack might be useful to guarantee proper /MT /MD linkage
-        # in MSVC if the packaged project doesn't have variables to set it
-        # properly
-        tools.replace_in_file("hello/CMakeLists.txt", "PROJECT(MyHello)",
-                              '''PROJECT(MyHello)
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()''')
+        git = tools.Git(folder="libgpiod")
+        git.clone("https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git", "v" + self.version)
+        tools.patch(patch_file="chip_iter.patch", base_path="libgpiod")
 
     def build(self):
-        cmake = CMake(self)
-        cmake.configure(source_folder="hello")
-        cmake.build()
-
-        # Explicit way:
-        # self.run('cmake %s/hello %s'
-        #          % (self.source_folder, cmake.command_line))
-        # self.run("cmake --build . %s" % cmake.build_config)
+        self.run("autoreconf --force --install --verbose", cwd="libgpiod")
+        cfgArgs = ["--enable-bindings-cxx"]
+        if self.options.shared:
+            cfgArgs += ["--enable-shared", "--disable-static"]
+        else:
+            cfgArgs += ["--disable-shared", "--enable-static"]
+        autotools = AutoToolsBuildEnvironment(self)
+        autotools.configure(
+            configure_dir="libgpiod",
+            args=cfgArgs,
+            vars={"ac_cv_func_malloc_0_nonnull": "yes"})
+        autotools.make()
 
     def package(self):
-        self.copy("*.h", dst="include", src="hello")
-        self.copy("*hello.lib", dst="lib", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
+        self.copy(pattern="COPYING", src="libgpiod", keep_path=False)
+        self.copy("*.h", dst="include", src="libgpiod/include")
+        self.copy("*.hpp", dst="include", src="libgpiod/bindings/cxx")
         self.copy("*.so", dst="lib", keep_path=False)
-        self.copy("*.dylib", dst="lib", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["hello"]
-
+        self.cpp_info.libs = ["gpiodcxx", "gpiod"]

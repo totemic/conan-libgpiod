@@ -1,0 +1,18 @@
+diff --git a/bindings/cxx/iter.cpp b/bindings/cxx/iter.cpp
+index 0f11057..3598dbc 100644
+--- a/bindings/cxx/iter.cpp
++++ b/bindings/cxx/iter.cpp
+@@ -58,10 +58,11 @@ bool chip_iter::operator!=(const chip_iter& rhs) const noexcept
+ }
+ 
+ chip_iter::chip_iter(::gpiod_chip_iter *iter)
+-	: _m_iter(iter, chip_iter_deleter),
+-	  _m_current(chip(::gpiod_chip_iter_next_noclose(this->_m_iter.get())))
++	: _m_iter(iter, chip_iter_deleter)
+ {
++	::gpiod_chip* current = ::gpiod_chip_iter_next_noclose(this->_m_iter.get());
+ 
++	this->_m_current = current ? chip(current) : chip();
+ }
+ 
+ chip_iter& chip_iter::operator++(void)
