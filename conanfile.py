@@ -14,6 +14,10 @@ class LibgpiodConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
 
+    def system_requirements(self):
+        installer = tools.SystemPackageTool()
+        installer.install("autoconf-archive")
+
     def source(self):
         git = tools.Git(folder="libgpiod")
         git.clone("https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git", "v" + self.version)
