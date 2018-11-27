@@ -38,6 +38,7 @@ class LibgpiodConan(ConanFile):
             args=cfgArgs,
             vars=envVars)
         autotools.make()
+        autotools.install()
 
     def package(self):
         self.copy(pattern="COPYING", src="libgpiod", keep_path=False)
