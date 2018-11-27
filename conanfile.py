@@ -31,10 +31,12 @@ class LibgpiodConan(ConanFile):
         else:
             cfgArgs += ["--disable-shared", "--enable-static"]
         autotools = AutoToolsBuildEnvironment(self)
+        envVars = autotools.vars
+        envVars["ac_cv_func_malloc_0_nonnull"] = "yes"
         autotools.configure(
             configure_dir="libgpiod",
             args=cfgArgs,
-            vars={"ac_cv_func_malloc_0_nonnull": "yes"})
+            vars=envVars)
         autotools.make()
 
     def package(self):
