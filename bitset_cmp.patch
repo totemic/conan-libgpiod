@@ -1,0 +1,13 @@
+diff --git a/bindings/cxx/line_bulk.cpp b/bindings/cxx/line_bulk.cpp
+index c93f364..e52d33d 100644
+--- a/bindings/cxx/line_bulk.cpp
++++ b/bindings/cxx/line_bulk.cpp
+@@ -29,7 +29,7 @@ const ::std::map<int, int> reqtype_mapping = {
+ 
+ struct bitset_cmp
+ {
+-	bool operator()(const ::std::bitset<32>& lhs, const ::std::bitset<32>& rhs)
++	bool operator()(const ::std::bitset<32>& lhs, const ::std::bitset<32>& rhs) const
+ 	{
+ 		return lhs.to_ulong() < rhs.to_ulong();
+ 	}

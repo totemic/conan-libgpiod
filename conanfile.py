@@ -9,7 +9,7 @@ class LibgpiodConan(ConanFile):
     url = "https://github.com/mbeach/conan-libgpiod"
     description = "Library for interacting with the linux GPIO character device"
     topics = ("gpio")
-    exports_sources = "chip_iter.patch"
+    exports_sources = "chip_iter.patch", "bitset_cmp.patch"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
@@ -22,6 +22,7 @@ class LibgpiodConan(ConanFile):
         git = tools.Git(folder="libgpiod")
         git.clone("https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git", "v" + self.version)
         tools.patch(patch_file="chip_iter.patch", base_path="libgpiod")
+        tools.patch(patch_file="bitset_cmp.patch", base_path="libgpiod")
 
     def build(self):
         self.run("autoreconf --force --install --verbose", cwd="libgpiod")
