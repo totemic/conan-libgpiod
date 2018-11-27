@@ -6,3 +6,4 @@ conan_basic_setup()
 
 add_executable(gpioDetect gpioDetect.cpp)
 target_link_libraries(gpioDetect ${CONAN_LIBS})
+target_compile_features(gpioDetect PUBLIC cxx_std_11)
