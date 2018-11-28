@@ -5,6 +5,8 @@ env:
      - CONAN_USERNAME: "mbeach"
      - CONAN_LOGIN_USERNAME: "mbeach"
      - CONAN_CHANNEL: "testing"
+     - CONAN_UPLOAD: "https://api.bintray.com/conan/mbeach/public-conan"
+     - CONAN_UPLOAD_ONLY_WHEN_STABLE: 0
      
 linux: &linux
    os: linux
