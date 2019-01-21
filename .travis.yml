@@ -2,10 +2,10 @@
 env:
    global:
      - CONAN_REFERENCE: "libgpiod/1.2"
-     - CONAN_USERNAME: "mbeach"
+     - CONAN_USERNAME: "ecashptyltd"
      - CONAN_LOGIN_USERNAME: "mbeach"
      - CONAN_CHANNEL: "testing"
-     - CONAN_UPLOAD: "https://api.bintray.com/conan/mbeach/public-conan"
+     - CONAN_UPLOAD: "https://api.bintray.com/conan/ecashptyltd/public-conan"
      - CONAN_UPLOAD_ONLY_WHEN_STABLE: 0
      
 linux: &linux
