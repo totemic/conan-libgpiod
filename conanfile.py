@@ -3,7 +3,7 @@ from conans import ConanFile, AutoToolsBuildEnvironment, tools
 
 class LibgpiodConan(ConanFile):
     name = "libgpiod"
-    version = "1.2"
+    version = "1.2.1"
     license = "LGPL-2.1-or-later"
     author = "Michael Beach <michaelb@ieee.org>"
     url = "https://github.com/mbeach/conan-libgpiod"
@@ -17,8 +17,6 @@ class LibgpiodConan(ConanFile):
     def source(self):
         git = tools.Git(folder="libgpiod")
         git.clone("https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git", "v" + self.version)
-        tools.patch(patch_file="chip_iter.patch", base_path="libgpiod")
-        tools.patch(patch_file="bitset_cmp.patch", base_path="libgpiod")
 
     def build_requirements(self):
         installer = tools.SystemPackageTool()

@@ -1,7 +1,7 @@
 
 env:
    global:
-     - CONAN_REFERENCE: "libgpiod/1.2"
+     - CONAN_REFERENCE: "libgpiod/1.2.1"
      - CONAN_USERNAME: "ecashptyltd"
      - CONAN_LOGIN_USERNAME: "mbeach"
      - CONAN_CHANNEL: "testing"
