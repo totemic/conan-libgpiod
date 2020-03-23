@@ -4,7 +4,7 @@ from conans import ConanFile, AutoToolsBuildEnvironment, tools
 
 class LibgpiodConan(ConanFile):
     name = "libgpiod"
-    version = "1.4.1"
+    version = "1.2.1"
     license = "LGPL-2.1-or-later"
     homepage = "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git"
     url = "https://github.com/jens-totemic/conan-libgpiod"
@@ -23,7 +23,7 @@ class LibgpiodConan(ConanFile):
         release_name = "%s-%s" % (self.name, self.version)
         unpacked_name = release_name
         tools.get("{0}/snapshot/{1}.tar.gz".format(self.homepage, release_name),
-                  sha256="7cd9fc7efe9a689e2852f907a4f79399f7488a32ae57555f3be432b0c2c80a75")
+                  sha256="3a8578bd5257e36d0e69d0272bb2e7a8816ae103b2321648f011a52519499d3e")
         os.rename(unpacked_name, self._source_subfolder)
 
     # def build_requirements(self):
