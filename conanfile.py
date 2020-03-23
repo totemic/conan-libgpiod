@@ -64,6 +64,10 @@ class LibgpiodConan(ConanFile):
             with tools.chdir(self._source_subfolder):
                 autotools = AutoToolsBuildEnvironment(self)
                 autotools.install()
+        else:
+            # on non-linux platforms, expose the header files to help cross-development
+            self.copy(pattern="*.h", dst="include", src=self._source_subfolder+"/include", symlinks=True)
+            self.copy(pattern="*.hpp", dst="include", src=self._source_subfolder+"/bindings/cxx", symlinks=True)
 
     def package_info(self):
         if self.settings.os == "Linux":
