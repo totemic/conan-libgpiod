@@ -26,9 +26,10 @@ class LibgpiodConan(ConanFile):
                   sha256="3a8578bd5257e36d0e69d0272bb2e7a8816ae103b2321648f011a52519499d3e")
         os.rename(unpacked_name, self._source_subfolder)
 
-    # def build_requirements(self):
-    #     installer = tools.SystemPackageTool()
-    #     installer.install("autoconf-archive")
+    def build_requirements(self):
+        if self.settings.os == "Linux":
+            installer = tools.SystemPackageTool()
+            installer.install("autoconf-archive")
 
     def build(self):
         if self.settings.os == "Linux":
