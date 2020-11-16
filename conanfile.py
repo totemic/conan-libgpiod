@@ -1,6 +1,7 @@
 import os
 from os.path import join
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans.errors import ConanInvalidConfiguration
 
 
 SOURCE_SUBFOLDER = "sources"
@@ -18,9 +19,9 @@ class LibgpiodConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
 
-    # def source(self):
-    #     git = tools.Git(folder="libgpiod")
-    #     git.clone("https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git", "v" + self.version)
+    def configure(self):
+        if self.settings.os != 'Linux':
+            raise ConanInvalidConfiguration("Library is only supported for Linux")
 
     def source(self):
         release_name = f"{self.name}-{self.version}"
@@ -31,9 +32,8 @@ class LibgpiodConan(ConanFile):
         os.rename(release_name, SOURCE_SUBFOLDER)
 
     def build_requirements(self):
-        if self.settings.os == "Linux":
-            installer = tools.SystemPackageTool()
-            installer.install("autoconf-archive")
+        installer = tools.SystemPackageTool()
+        installer.install("autoconf-archive")
 
     def _configure_autotools(self, folder):
         cfg_args = ["--enable-bindings-cxx", "--enable-tools"]
@@ -54,30 +54,19 @@ class LibgpiodConan(ConanFile):
     def build(self):
         source_folder = join(self.source_folder, SOURCE_SUBFOLDER)
 
-        if self.settings.os == "Linux":
-            # autoreconf changes the content of the source folder, but for automatic build this
-            # is fine as the source folder is copied into the build folder first
-            self.run("autoreconf --force --install --verbose", cwd=source_folder)
+        # autoreconf changes the content of the source folder, but for automatic build this
+        # is fine as the source folder is copied into the build folder first
+        self.run("autoreconf --force --install --verbose", cwd=source_folder)
 
-            autotools = self._configure_autotools(source_folder)
-            autotools.make()
-        else:
-            # We allow using it on all platforms, but for anything except Linux nothing is produced
-            # this allows unconditionally including this conan package on all platforms
-            self.output.info("Nothing to be done for this OS")
+        autotools = self._configure_autotools(source_folder)
+        autotools.make()
 
     def package(self):
         source_folder = join(self.source_folder, SOURCE_SUBFOLDER)
 
-        if self.settings.os == "Linux":
-            # Reconfigure to update the package folder
-            autotools = self._configure_autotools(source_folder)
-            autotools.install()
-        else:
-            # On non-linux platforms, expose the header files to help cross-development
-            self.copy(pattern="*.h", dst="include", src=join(source_folder, "include"), symlinks=True)
-            self.copy(pattern="*.hpp", dst="include", src=join(source_folder, "bindings/cxx"), symlinks=True)
+        # Reconfigure to update the package folder
+        autotools = self._configure_autotools(source_folder)
+        autotools.install()
 
     def package_info(self):
-        if self.settings.os == "Linux":
-            self.cpp_info.libs = ["gpiodcxx", "gpiod"]
+        self.cpp_info.libs = ["gpiodcxx", "gpiod"]
